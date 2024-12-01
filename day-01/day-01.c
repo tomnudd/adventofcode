@@ -3,7 +3,7 @@
 
 #define ARRAY_SIZE 1000
 
-int compare(const void* a, const void* b)
+int compare(const void *a, const void *b)
 {
     return (*(int*)a - *(int*)b);
 }
@@ -58,7 +58,7 @@ struct hashy *add(int key, int val)
 }
 
 // Main
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     // check
     if (argc != 2)
