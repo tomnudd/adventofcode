@@ -19,6 +19,7 @@ int countLines(FILE *in)
 }
 
 // Count occurences of str2 in str1
+// Not in use: from previous attempt of matrix decomposition
 int countSubstring(char *str1, char *str2)
 {
     int count = 0;
