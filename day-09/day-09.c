@@ -73,6 +73,13 @@ int main(int argc, char **argv)
         }
     }
 
+    int *arr2;
+    arr2 = (int*)malloc(sum * sizeof(int));
+    for (i = 0; i < sum; i++)
+    {
+        arr2[i] = arr[i];
+    }
+
     // meet in the middle
     int l = 0;
     int r = sum - 1;
@@ -100,8 +107,77 @@ int main(int argc, char **argv)
         if (arr[i] == -1) continue;
         part1 += (i * arr[i]);
     }
+    free(arr);
 
     printf("PART 1: %llu\n", part1);
+
+    // Part 2
+    // For each id, count occurrences and look for a gap
+    // Better idea: we have no need to count this, this is already in the input.
+        // scan R to L, moving files
+    for (i = id - 1; i >= 0; i--)
+    {
+        // file length
+        int iStart = -1;
+        int iEnd = -1;
+        int j;
+        for (j = sum - 1; j >= 0; j--)
+        {
+            if (arr2[j] != i)
+            {
+                if (iStart != -1)
+                {
+                    iEnd = j+1;
+                    break;
+                }
+            }
+            else if (iStart == -1)
+            {
+                iStart = j;
+            }
+
+            // special case at the start
+            if (j == 0) iEnd = j;
+        }
+    
+        // look for free space
+        int spaceNeeded = iStart - iEnd + 1;
+        int curSpace = 0;
+        j = 0;
+        while (j < iEnd)
+        {
+            if (arr2[j] == -1)
+            {
+                curSpace++;
+            }
+            else
+            {
+                curSpace = 0;
+            }
+
+            if (curSpace == spaceNeeded)
+            {
+                // moving time
+                for (int k = 0; k < curSpace; k++)
+                {
+                    arr2[j-k] = arr2[iEnd+k];
+                    arr2[iEnd+k] = -1;
+                }
+                break;
+            }
+            j++;
+        }
+    }
+
+    unsigned long long part2 = 0;
+    for (i = 0; i < sum; i++)
+    {
+        if (arr2[i] == -1) continue;
+        part2 += (i * arr2[i]);
+    }
+    free(arr2);
+
+    printf("PART 2: %llu\n", part2);
 
     return 0;
 }
