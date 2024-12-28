@@ -104,6 +104,7 @@ void explore(struct element **arr, int i, int j, int rows, int cols, int *region
     }
 }
 
+// Part 1
 void score(struct element **arr, int i, int j, int rows, int cols)
 {
     char type = arr[i][j].type;
@@ -117,100 +118,99 @@ void score(struct element **arr, int i, int j, int rows, int cols)
     arr[i][j].contribution = s;
 }
 
+// Part 2
+// Could alternatively do this with DFS
+//  Contribution of this element depends on how many directions we can explore from it
 void score2(struct element **arr, int i, int j, int rows, int cols)
 {
     char type = arr[i][j].type;
 
     int s = 0;
 
-    if (i == 0) // top
+    // top
+    if (i == 0 || arr[i-1][j].type != type)
     {
         if (j == 0)
         {
+            // top left
             s++;
         }
         else if (arr[i][j-1].type != type)
         {
+            // different element to left (new T edge)
             s++;
         }
-    }
-    else if (arr[i-1][j].type != type)
-    {
-        if (j == 0 || arr[i][j-1].type != type)
+        else if (i > 0 && arr[i-1][j-1].type == type)
         {
-            s++;
-        }
-        else if (arr[i][j-1].type == type && arr[i-1][j-1].type == type)
-        {
+            // same element to the left, but continues above that one (new T edge)
+            // Y.
+            // YY
             s++;
         }
     }
 
-    if (j == 0) // left
+    // left
+    if (j == 0 || arr[i][j-1].type != type)
     {
         if (i == 0)
         {
+            // top left
             s++;
         }
         else if (arr[i-1][j].type != type)
         {
+            // different element above (new LH edge)
             s++;
         }
-    }
-    else if (arr[i][j-1].type != type)
-    {
-        if (i == 0 || arr[i-1][j].type != type)
+        else if (j > 0 && arr[i-1][j-1].type == type)
         {
-            s++;
-        }
-        else if (arr[i-1][j].type == type && arr[i-1][j-1].type == type)
-        {
+            // same element above, but continues left of that one (new LH edge)
+            // ZZ
+            // .Z
             s++;
         }
     }
 
-    if (j == cols - 1) // right
+    // right
+    if (j == cols - 1 || arr[i][j+1].type != type)
     {
         if (i == 0)
         {
+            // top right
             s++;
         }
         else if (arr[i-1][j].type != type)
         {
+            // different element above (new RH edge)
             s++;
         }
-    }
-    else if (arr[i][j+1].type != type)
-    {
-        if (i == 0 || arr[i-1][j].type != type)
+        else if (j + 1 < cols && arr[i-1][j+1].type == type)
         {
-            s++;
-        }
-        else if (arr[i-1][j].type == type && arr[i-1][j+1].type == type)
-        {
+            // same element above, but continues to the right of that one (new RH edge)
+            // AA
+            // A.
             s++;
         }
     }
 
-    if (i == rows - 1) // bottom
+    // bottom
+    if (i == rows - 1 || arr[i+1][j].type != type)
     {
         if (j == 0)
         {
+            // bottom left 
             s++;
         }
         else if (arr[i][j-1].type != type)
         {
+            // different element to the left (new B edge)
             s++;
         }
-    }
-    else if (arr[i+1][j].type != type)
-    {
-        if (j == 0 || arr[i][j-1].type != type)
+        else if (i + 1 < rows && arr[i+1][j-1].type == type)
         {
-            s++;
-        }
-        else if (arr[i][j-1].type == type && arr[i+1][j-1].type == type)
-        {
+            // same element to the left, but something below that one (new B edge)
+            // BB
+            // B.
             s++;
         }
     }
@@ -258,7 +258,7 @@ int main(int argc, char **argv)
             region++;
         }
     }
-    
+
     // alloc regions
     struct regionElement *regions = (struct regionElement *)malloc(region * sizeof(struct regionElement));
     for (i = 0; i < region; i++)
@@ -276,24 +276,22 @@ int main(int argc, char **argv)
             int r = arr[i][j].region;
             int s = arr[i][j].contribution;
             int s2 = arr[i][j].contribution2;
-            
+
             regions[r].count++;
             regions[r].score += s;
             regions[r].score2 += s2;
         }
     }
 
-    // Part 1
+    // Part 1 and 2
     int part1 = 0;
     int part2 = 0;
     for (i = 0; i < region; i++)
     {
         part1 += regions[i].count * regions[i].score;
         part2 += regions[i].count * regions[i].score2;
-
-        //printf("Region %d has count %d, score2 %d, so res %d\n", i, regions[i].count, regions[i].score2, regions[i].count * regions[i].score2);
-        //printf("Region %d has count %d, score %d, so res %d\n", i, regions[i].count, regions[i].score, regions[i].count * regions[i].score);
     }
+    
     printf("Part 1: %d\n", part1);
     printf("Part 2: %d\n", part2);
 
